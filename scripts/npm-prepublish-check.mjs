@@ -9,6 +9,7 @@ const packageVersion = packageJson.version;
 const expectedRepository = "git+https://github.com/ccmqcy/change-proof.git";
 const npmInvocation = createNpmInvocation();
 const strictAuth = process.argv.includes("--strict-auth");
+const allowPublishedCurrent = process.argv.includes("--allow-published-current");
 const allowBypassToken = process.env.CHANGE_PROOF_NPM_BYPASS_2FA === "1";
 
 const failures = [];
@@ -45,7 +46,11 @@ if (ping.status !== 0) {
 
 const currentVersion = run("npm", ["view", `${packageName}@${packageVersion}`, "version", "--registry", registry, "--json"]);
 if (currentVersion.status === 0 && currentVersion.stdout.trim()) {
-  failures.push(`${packageName}@${packageVersion} already exists on npm.`);
+  if (allowPublishedCurrent) {
+    warnings.push(`${packageName}@${packageVersion} already exists on npm; allowed for verification mode.`);
+  } else {
+    failures.push(`${packageName}@${packageVersion} already exists on npm.`);
+  }
 } else if (!isNotFound(currentVersion)) {
   failures.push(`Could not verify npm version availability: ${trimOutput(currentVersion.stderr || currentVersion.stdout)}`);
 }

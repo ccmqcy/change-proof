@@ -89,10 +89,12 @@ npm run verify
 Meaning:
 
 - `npm:preflight`: checks package metadata, official registry reachability, current version availability, and npm auth state.
+- `npm:preflight` runs in verification mode and allows the current version to already exist after publication.
 - `pack:dry`: runs `npm pack --dry-run` against the official npm registry.
 - `publish:dry`: runs `npm publish --dry-run` against the official npm registry.
 - `verify:install`: packs the package into a temp directory, installs it into a temp consumer project, and verifies `change-proof --version`.
 - `verify`: runs tests, npm preflight, pack dry-run, and install verification.
+- `publish:manual` still runs strict auth/version checks before a real publish and will block republishing an existing version.
 
 ## Actual Publish Attempt Blocker
 
