@@ -4,7 +4,7 @@ Turn a local `git diff` into a clean change, verification, and risk proof packet
 
 ## Status
 
-- Stage: mvp
+- Stage: published
 - Priority: 1
 - GitHub remote: https://github.com/ccmqcy/change-proof
 - Package registry: not published

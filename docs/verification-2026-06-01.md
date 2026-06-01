@@ -158,6 +158,33 @@ Follow-up CI run after action upgrade:
 - Result: PASS.
 - Job ran `npm ci` and `npm test`.
 
+Final CI run after publication documentation:
+
+- Commit pushed: `8d9eade`.
+- Run ID: `26734161750`.
+- Result: PASS.
+- Job ran on `ubuntu-latest`.
+- Job ran `npm ci` and `npm test`.
+
+### GitHub release
+
+Command:
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+gh release create v0.1.0 --repo ccmqcy/change-proof --title "Change Proof v0.1.0" --notes "<release notes>"
+```
+
+Result: PASS.
+
+Evidence summary:
+
+- Release URL: https://github.com/ccmqcy/change-proof/releases/tag/v0.1.0
+- Release is not a draft.
+- Release is not marked prerelease.
+- Published at `2026-06-01T03:52:13Z`.
+
 ## Failed Attempt That Was Resolved
 
 An earlier smoke attempt used a nested quoted command:
@@ -171,7 +198,8 @@ PowerShell passed the nested quotes incorrectly, causing the CLI to see extra ar
 ## Not Verified
 
 - No npm package has been published.
-- The CLI has not been tested on macOS or Linux.
+- The CLI has not been tested on macOS.
+- Linux is covered by GitHub Actions `ubuntu-latest`; no additional Linux distributions were tested.
 - The CLI has not been tested against very large diffs.
 - The CLI has not been tested with rename-heavy diffs beyond unit-level parsing.
 
