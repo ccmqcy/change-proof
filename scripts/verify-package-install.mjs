@@ -9,14 +9,12 @@ const tempRoot = mkdtempSync(join(tmpdir(), "change-proof-install-"));
 const packageDir = join(tempRoot, "package");
 const installDir = join(tempRoot, "consumer");
 const registry = "https://registry.npmjs.org/";
-const npmCommand = process.env.npm_execpath ? process.execPath : (process.platform === "win32" ? "npm.cmd" : "npm");
-const npmBaseArgs = process.env.npm_execpath ? [process.env.npm_execpath] : [];
+const npmInvocation = createNpmInvocation();
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 
 try {
   ensureDir(packageDir);
   const packOutput = npmExec([
-    ...npmBaseArgs,
     "pack",
     "--json",
     "--registry",
@@ -32,9 +30,9 @@ try {
 
   const tarballPath = join(packageDir, packed.filename);
 
-  npmExec([...npmBaseArgs, "init", "-y"], ensureDir(installDir), { quiet: true });
+  npmExec(["init", "-y"], ensureDir(installDir), { quiet: true });
 
-  npmExec([...npmBaseArgs, "install", tarballPath, "--registry", registry], installDir, { quiet: true });
+  npmExec(["install", tarballPath, "--registry", registry], installDir, { quiet: true });
 
   const binShim = process.platform === "win32"
     ? join(installDir, "node_modules", ".bin", "change-proof.cmd")
@@ -69,7 +67,7 @@ function ensureDir(path) {
 }
 
 function npmExec(args, cwd, options = {}) {
-  return execFileSync(npmCommand, args, {
+  return execFileSync(npmInvocation.command, [...npmInvocation.baseArgs, ...args], {
     cwd,
     encoding: "utf8",
     stdio: options.quiet ? ["ignore", "pipe", "pipe"] : ["ignore", "pipe", "inherit"],
@@ -78,4 +76,25 @@ function npmExec(args, cwd, options = {}) {
       npm_config_dry_run: "false"
     }
   });
+}
+
+function createNpmInvocation() {
+  if (process.env.npm_execpath) {
+    return {
+      command: process.execPath,
+      baseArgs: [process.env.npm_execpath]
+    };
+  }
+
+  if (process.platform === "win32") {
+    return {
+      command: process.env.ComSpec ?? "cmd.exe",
+      baseArgs: ["/d", "/s", "/c", "npm"]
+    };
+  }
+
+  return {
+    command: "npm",
+    baseArgs: []
+  };
 }

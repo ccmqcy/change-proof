@@ -7,7 +7,7 @@ Turn a local `git diff` into a clean change, verification, and risk proof packet
 - Stage: published
 - Priority: 1
 - GitHub remote: https://github.com/ccmqcy/change-proof
-- Package registry: not published; npm-ready as `change-proof@0.1.1`
+- Package registry: not published; npm-ready as `change-proof@0.1.2`
 - Current implementation: local TypeScript CLI
 
 ## Why This Exists
@@ -139,9 +139,9 @@ node dist/cli.js report --help
 
 ## npm Publish Readiness
 
-Current package version: `0.1.1`
+Current package version: `0.1.2`
 
-The project is prepared for npm publication, but has not been published to npm.
+The project is prepared for npm publication, but has not been published to npm. A previous publish attempt failed because npm 2FA was disabled; the current local profile check reports `two-factor auth: auth-and-writes`, so the next interactive publish attempt should prompt for the configured second factor.
 
 Prepared checks:
 
@@ -152,6 +152,19 @@ Prepared checks:
 - `npm run publish:dry`
 
 Important: this machine's default npm registry points to `https://registry.npmmirror.com`, so publish scripts explicitly use `https://registry.npmjs.org/`.
+
+Manual publish now runs a strict auth check first:
+
+```powershell
+npm run publish:manual
+```
+
+If publishing with a granular access token that has bypass 2FA enabled, set this explicitly for that shell:
+
+```powershell
+$env:CHANGE_PROOF_NPM_BYPASS_2FA="1"
+npm run publish:manual
+```
 
 Recommended first publish path is documented in `docs/npm-publish-preflight-2026-06-01.md`.
 

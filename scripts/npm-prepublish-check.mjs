@@ -7,8 +7,9 @@ const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.me
 const packageName = packageJson.name;
 const packageVersion = packageJson.version;
 const expectedRepository = "git+https://github.com/ccmqcy/change-proof.git";
-const npmCommand = process.env.npm_execpath ? process.execPath : (process.platform === "win32" ? "npm.cmd" : "npm");
-const npmBaseArgs = process.env.npm_execpath ? [process.env.npm_execpath] : [];
+const npmInvocation = createNpmInvocation();
+const strictAuth = process.argv.includes("--strict-auth");
+const allowBypassToken = process.env.CHANGE_PROOF_NPM_BYPASS_2FA === "1";
 
 const failures = [];
 const warnings = [];
@@ -60,7 +61,24 @@ if (packageInfo.status === 0 && packageInfo.stdout.trim()) {
 
 const whoami = run("npm", ["whoami", "--registry", registry]);
 if (whoami.status === 0) {
-  warnings.push(`Authenticated to npm as ${whoami.stdout.trim()}.`);
+  const username = whoami.stdout.trim();
+  warnings.push(`Authenticated to npm as ${username}.`);
+
+  const profile = run("npm", ["profile", "get", "--registry", registry]);
+  if (profile.status === 0) {
+    const twoFactorState = parseTwoFactorState(profile.stdout);
+    if (twoFactorState) {
+      warnings.push(`npm account two-factor auth: ${twoFactorState}.`);
+    }
+
+    if (strictAuth && twoFactorState === "disabled" && !allowBypassToken) {
+      failures.push(
+        "Authenticated npm account has two-factor auth disabled. Enable npm 2FA, use trusted publishing, or set CHANGE_PROOF_NPM_BYPASS_2FA=1 only when using a granular access token with bypass 2FA enabled."
+      );
+    }
+  } else {
+    warnings.push(`Could not read npm profile for 2FA status: ${trimOutput(profile.stderr || profile.stdout)}`);
+  }
 } else {
   warnings.push("Not authenticated to npm. This is acceptable for preflight, but publish requires npm login, trusted publishing, or an approved publish flow.");
 }
@@ -83,8 +101,8 @@ if (failures.length > 0) {
 console.log(`npm preflight passed for ${packageName}@${packageVersion}`);
 
 function run(command, args) {
-  const executable = command === "npm" ? npmCommand : command;
-  const effectiveArgs = command === "npm" ? [...npmBaseArgs, ...args] : args;
+  const executable = command === "npm" ? npmInvocation.command : command;
+  const effectiveArgs = command === "npm" ? [...npmInvocation.baseArgs, ...args] : args;
   return spawnSync(executable, effectiveArgs, {
     cwd: new URL("..", import.meta.url),
     encoding: "utf8"
@@ -97,4 +115,30 @@ function isNotFound(result) {
 
 function trimOutput(value) {
   return (value ?? "").trim().replace(/\s+/g, " ");
+}
+
+function parseTwoFactorState(profileOutput) {
+  const match = profileOutput.match(/^two-factor auth:\s*(.+)$/im);
+  return match?.[1]?.trim().toLowerCase();
+}
+
+function createNpmInvocation() {
+  if (process.env.npm_execpath) {
+    return {
+      command: process.execPath,
+      baseArgs: [process.env.npm_execpath]
+    };
+  }
+
+  if (process.platform === "win32") {
+    return {
+      command: process.env.ComSpec ?? "cmd.exe",
+      baseArgs: ["/d", "/s", "/c", "npm"]
+    };
+  }
+
+  return {
+    command: "npm",
+    baseArgs: []
+  };
 }

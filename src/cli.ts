@@ -13,7 +13,7 @@ interface ParsedArgs {
   options: ReportOptions;
 }
 
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
 
 export function main(argv = process.argv.slice(2)): number {
   const parsed = parseArgs(argv);

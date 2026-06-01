@@ -12,7 +12,7 @@ GitHub repository: https://github.com/ccmqcy/change-proof
 
 npm publication status: not published
 
-Prepared npm-ready version: `0.1.1`
+Prepared npm-ready version: `0.1.2`
 
 ## Official Requirements Checked
 
@@ -34,20 +34,29 @@ Based on current npm documentation:
 - Local Node.js: `v24.14.0`.
 - Project-level `package.json` repository URL matches `git+https://github.com/ccmqcy/change-proof.git`.
 - Official npm registry ping succeeded with `--registry https://registry.npmjs.org/`.
-- `change-proof@0.1.1` is not currently published on the official npm registry.
+- `change-proof@0.1.2` is not currently published on the official npm registry.
 - `change-proof` package name returned `E404` on the official npm registry at the time of this check.
 - `npm run verify` passed locally.
 - `npm run publish:dry` passed locally.
-- Dry-run tarball preview: `change-proof-0.1.1.tgz`.
-- Dry-run package size: 15.5 kB.
+- Dry-run tarball preview: `change-proof-0.1.2.tgz`.
+- Dry-run package size: 15.8 kB.
 - Dry-run package contents: 19 files.
-- `npm publish --dry-run` only warned that npm login is required for a real publish.
+- `npm publish --dry-run` completed against the authenticated account and did not upload the package.
+
+- npm account ownership: authenticated locally as `cccqqy`.
 
 未验证:
 
-- npm account ownership, because this machine is not authenticated to npm.
 - npm trusted publisher configuration, because it requires npm-side account/package configuration.
 - Actual `npm publish`, intentionally not run.
+
+Additional account check after the failed publish:
+
+```text
+npm profile get --registry https://registry.npmjs.org/ -> two-factor auth: auth-and-writes
+```
+
+This means the original E403 blocker has been addressed for interactive manual publishing, but the package has still not been published.
 
 ## Important Local Registry Note
 
@@ -83,6 +92,31 @@ Meaning:
 - `verify:install`: packs the package into a temp directory, installs it into a temp consumer project, and verifies `change-proof --version`.
 - `verify`: runs tests, npm preflight, pack dry-run, and install verification.
 
+## Actual Publish Attempt Blocker
+
+A manual publish attempt reached the official npm registry and failed with:
+
+```text
+npm error code E403
+npm error 403 Forbidden - PUT https://registry.npmjs.org/change-proof
+npm error 403 Two-factor authentication or granular access token with bypass 2fa enabled is required to publish packages.
+```
+
+Local account state observed around the failed attempt:
+
+```text
+npm whoami --registry https://registry.npmjs.org/ -> cccqqy
+npm profile get --registry https://registry.npmjs.org/ -> two-factor auth: disabled
+```
+
+After enabling 2FA, the current account check reports:
+
+```text
+npm profile get --registry https://registry.npmjs.org/ -> two-factor auth: auth-and-writes
+```
+
+Conclusion: package content is ready; the original E403 was caused by disabled 2FA and should be resolved for an interactive publish attempt.
+
 ## publish:dry Result
 
 Command:
@@ -98,10 +132,10 @@ Evidence summary:
 - `prepublishOnly` ran `npm run verify`.
 - 8 tests passed.
 - Official npm registry preflight passed.
-- `pack:dry` produced `change-proof-0.1.1.tgz`.
+- `pack:dry` produced `change-proof-0.1.2.tgz`.
 - `verify:install` installed the packed tarball into a temp consumer project and verified the CLI version.
 - `npm publish --dry-run` completed with `+ change-proof@0.1.1`.
-- Expected warning: this machine is not logged in to `https://registry.npmjs.org/`; real publish still requires authentication, trusted publishing, or staged publishing approval.
+- The dry-run did not upload the package. Real publish still requires completing npm's interactive 2FA challenge or using a verified trusted/staged publishing flow.
 
 ## Recommended First Publish Path
 
@@ -120,12 +154,15 @@ npm run publish:dry
 Direct local publish:
 
 ```powershell
+npm profile enable-2fa auth-and-writes --registry https://registry.npmjs.org/
+npm profile get --registry https://registry.npmjs.org/
 npm run publish:manual
 ```
 
 Staged publish:
 
 ```powershell
+npm profile enable-2fa auth-and-writes --registry https://registry.npmjs.org/
 npm stage publish --registry https://registry.npmjs.org/
 ```
 

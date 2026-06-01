@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2 - 2026-06-01
+
+npm publish blocker handling.
+
+- Added strict npm auth preflight for manual publish.
+- Detects local npm account 2FA status before `publish:manual`.
+- Documents the E403 publish failure caused by disabled npm 2FA.
+- Ignores local `.npmrc` so auth tokens are not accidentally committed.
+
 ## 0.1.1 - 2026-06-01
 
 npm publish readiness release.
