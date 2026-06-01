@@ -1,0 +1,46 @@
+{
+  "name": "change-proof",
+  "version": "0.1.0",
+  "description": "Turn a local git diff into a clean change, verification, and risk proof packet.",
+  "type": "module",
+  "bin": {
+    "change-proof": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test tests/*.test.js",
+    "start": "node dist/cli.js",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\""
+  },
+  "keywords": [
+    "git",
+    "diff",
+    "verification",
+    "ai-coding",
+    "code-review",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ccmqcy/change-proof.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ccmqcy/change-proof/issues"
+  },
+  "homepage": "https://github.com/ccmqcy/change-proof#readme",
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.4",
+    "typescript": "^6.0.3"
+  }
+}
