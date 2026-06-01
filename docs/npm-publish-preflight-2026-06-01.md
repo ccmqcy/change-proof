@@ -10,9 +10,9 @@ Registry: `https://registry.npmjs.org/`
 
 GitHub repository: https://github.com/ccmqcy/change-proof
 
-npm publication status: not published
+npm publication status: published
 
-Prepared npm-ready version: `0.1.2`
+Published version: `0.1.2`
 
 ## Official Requirements Checked
 
@@ -34,21 +34,23 @@ Based on current npm documentation:
 - Local Node.js: `v24.14.0`.
 - Project-level `package.json` repository URL matches `git+https://github.com/ccmqcy/change-proof.git`.
 - Official npm registry ping succeeded with `--registry https://registry.npmjs.org/`.
-- `change-proof@0.1.2` is not currently published on the official npm registry.
-- `change-proof` package name returned `E404` on the official npm registry at the time of this check.
+- `change-proof@0.1.2` is published on the official npm registry.
+- `change-proof` package name was initially available, then reserved by the successful `0.1.2` publish.
 - `npm run verify` passed locally.
 - `npm run publish:dry` passed locally.
 - Dry-run tarball preview: `change-proof-0.1.2.tgz`.
 - Dry-run package size: 15.8 kB.
 - Dry-run package contents: 19 files.
 - `npm publish --dry-run` completed against the authenticated account and did not upload the package.
+- `npm publish` completed successfully after interactive npm authentication.
+- `npm view change-proof version --registry https://registry.npmjs.org/` returns `0.1.2`.
+- `npx --registry https://registry.npmjs.org/ --yes change-proof@latest --version` returns `0.1.2`.
 
 - npm account ownership: authenticated locally as `cccqqy`.
 
 未验证:
 
 - npm trusted publisher configuration, because it requires npm-side account/package configuration.
-- Actual `npm publish`, intentionally not run.
 
 Additional account check after the failed publish:
 
@@ -56,7 +58,7 @@ Additional account check after the failed publish:
 npm profile get --registry https://registry.npmjs.org/ -> two-factor auth: auth-and-writes
 ```
 
-This means the original E403 blocker has been addressed for interactive manual publishing, but the package has still not been published.
+This means the original E403 blocker was addressed for interactive manual publishing, and the package was later published successfully.
 
 ## Important Local Registry Note
 
@@ -115,7 +117,39 @@ After enabling 2FA, the current account check reports:
 npm profile get --registry https://registry.npmjs.org/ -> two-factor auth: auth-and-writes
 ```
 
-Conclusion: package content is ready; the original E403 was caused by disabled 2FA and should be resolved for an interactive publish attempt.
+Conclusion: package content was ready; the original E403 was caused by disabled 2FA and was resolved by enabling npm 2FA before the successful publish.
+
+## Final npm Publish Result
+
+Command:
+
+```powershell
+npm run publish:manual
+```
+
+Result: PASS.
+
+Evidence summary:
+
+- npm prompted for interactive account authentication.
+- Publish completed with `+ change-proof@0.1.2`.
+- Official package page: https://www.npmjs.com/package/change-proof
+- Tarball: https://registry.npmjs.org/change-proof/-/change-proof-0.1.2.tgz
+- Integrity: `sha512-+Bp2ZGh+FD1BQ9x4YjFmiUksqp8sTPADLXaHYLvBoC5cyL3zS+jCPXPEglXnxteqywq0Gpq/WEEONnT/7bZdLg==`
+- Published versions list contains only `0.1.2`.
+
+Post-publish verification:
+
+```powershell
+npm view change-proof version --registry https://registry.npmjs.org/
+npx --registry https://registry.npmjs.org/ --yes change-proof@latest --version
+```
+
+Both commands returned:
+
+```text
+0.1.2
+```
 
 ## publish:dry Result
 
@@ -134,12 +168,12 @@ Evidence summary:
 - Official npm registry preflight passed.
 - `pack:dry` produced `change-proof-0.1.2.tgz`.
 - `verify:install` installed the packed tarball into a temp consumer project and verified the CLI version.
-- `npm publish --dry-run` completed with `+ change-proof@0.1.1`.
-- The dry-run did not upload the package. Real publish still requires completing npm's interactive 2FA challenge or using a verified trusted/staged publishing flow.
+- `npm publish --dry-run` completed with `+ change-proof@0.1.2`.
+- The dry-run did not upload the package. Future real publishes still require completing npm's interactive 2FA challenge or using a verified trusted/staged publishing flow.
 
-## Recommended First Publish Path
+## Future Publish Path
 
-Recommended safest path:
+Recommended safest path for future versions:
 
 1. Log in to npm on this machine or configure npm trusted publishing.
 2. Run:
@@ -149,7 +183,7 @@ npm run verify
 npm run publish:dry
 ```
 
-3. Publish using one of these options:
+3. Publish using one of these options.
 
 Direct local publish:
 
