@@ -4,6 +4,8 @@
 
 Verified the first MVP implementation of Change Proof in `projects/01-change-proof/`.
 
+GitHub repository: https://github.com/ccmqcy/change-proof
+
 ## Verified
 
 ### Dependency install
@@ -119,6 +121,43 @@ Evidence summary:
 - Tarball included `CHANGELOG.md`.
 - `dist/cli.js` was checked and still starts with `#!/usr/bin/env node`.
 
+### GitHub publish
+
+Command:
+
+```powershell
+gh repo create ccmqcy/change-proof --source=. --public --push --description "Turn a local git diff into a clean change, verification, and risk proof packet."
+```
+
+Result: PASS.
+
+Evidence summary:
+
+- GitHub repository created: https://github.com/ccmqcy/change-proof
+- Visibility: PUBLIC.
+- Default branch: `main`.
+- Local `main` tracks `origin/main`.
+- Initial pushed commit: `a28612f`.
+
+### GitHub Actions CI
+
+First CI run after publish:
+
+- Run ID: `26734116677`.
+- Result: PASS.
+- Warning: `actions/checkout@v4` and `actions/setup-node@v4` used Node.js 20 action runtime.
+
+Follow-up CI run after action upgrade:
+
+- Official latest tags checked with GitHub API:
+  - `actions/checkout`: `v6.0.2`.
+  - `actions/setup-node`: `v6.4.0`.
+- Workflow updated to `actions/checkout@v6` and `actions/setup-node@v6`.
+- Commit pushed: `8b87336`.
+- Run ID: `26734139114`.
+- Result: PASS.
+- Job ran `npm ci` and `npm test`.
+
 ## Failed Attempt That Was Resolved
 
 An earlier smoke attempt used a nested quoted command:
@@ -131,9 +170,7 @@ PowerShell passed the nested quotes incorrectly, causing the CLI to see extra ar
 
 ## Not Verified
 
-- No GitHub repository has been created.
 - No npm package has been published.
-- The GitHub Actions workflow has not run on GitHub.
 - The CLI has not been tested on macOS or Linux.
 - The CLI has not been tested against very large diffs.
 - The CLI has not been tested with rename-heavy diffs beyond unit-level parsing.

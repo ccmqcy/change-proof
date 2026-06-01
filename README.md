@@ -6,7 +6,7 @@ Turn a local `git diff` into a clean change, verification, and risk proof packet
 
 - Stage: mvp
 - Priority: 1
-- GitHub remote: not created
+- GitHub remote: https://github.com/ccmqcy/change-proof
 - Package registry: not published
 - Current implementation: local TypeScript CLI
 
