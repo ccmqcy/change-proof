@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 
 const cliPath = join(process.cwd(), "dist", "cli.js");
+const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 
 test("CLI prints a plain version", () => {
   const result = spawnSync(process.execPath, [cliPath, "--version"], {
@@ -13,7 +14,7 @@ test("CLI prints a plain version", () => {
   });
 
   assert.equal(result.status, 0, result.stderr);
-  assert.equal(result.stdout.trim(), "0.1.0");
+  assert.equal(result.stdout.trim(), packageJson.version);
 });
 
 test("CLI generates reports for a real git diff", () => {

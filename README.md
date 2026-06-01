@@ -7,7 +7,7 @@ Turn a local `git diff` into a clean change, verification, and risk proof packet
 - Stage: published
 - Priority: 1
 - GitHub remote: https://github.com/ccmqcy/change-proof
-- Package registry: not published
+- Package registry: not published; npm-ready as `change-proof@0.1.1`
 - Current implementation: local TypeScript CLI
 
 ## Why This Exists
@@ -45,6 +45,12 @@ Outputs:
 npm install
 npm run build
 node dist/cli.js report --help
+```
+
+After npm publication:
+
+```powershell
+npx change-proof@latest report --help
 ```
 
 ## Usage
@@ -126,8 +132,28 @@ Wrote report=change-proof-report.md json=change-proof-report.json
 ```powershell
 npm run build
 npm test
+npm run verify
+npm run publish:dry
 node dist/cli.js report --help
 ```
+
+## npm Publish Readiness
+
+Current package version: `0.1.1`
+
+The project is prepared for npm publication, but has not been published to npm.
+
+Prepared checks:
+
+- `npm run npm:preflight`
+- `npm run pack:dry`
+- `npm run verify:install`
+- `npm run verify`
+- `npm run publish:dry`
+
+Important: this machine's default npm registry points to `https://registry.npmmirror.com`, so publish scripts explicitly use `https://registry.npmjs.org/`.
+
+Recommended first publish path is documented in `docs/npm-publish-preflight-2026-06-01.md`.
 
 ## Current Verification
 
@@ -147,7 +173,8 @@ Adjacent tools exist around diff viewing, AI review, and PR summarization. The p
 | `docs/` | Research, design notes, verification evidence |
 | `src/` | CLI source |
 | `tests/` | Node test runner tests |
-| `.github/workflows/ci.yml` | Future GitHub CI |
+| `scripts/` | npm preflight, package install verification, and publish support scripts |
+| `.github/workflows/ci.yml` | GitHub CI |
 
 ## Release Notes
 

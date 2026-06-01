@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.1 - 2026-06-01
+
+npm publish readiness release.
+
+- Added npm preflight checks for official registry reachability, package metadata, current-version availability, and authentication state.
+- Added package install verification from a packed tarball.
+- Added `prepack`, `prepublishOnly`, `pack:dry`, `publish:dry`, `publish:manual`, and `verify` scripts.
+- Added `publishConfig` for the official npm registry and public access.
+- Added build-time CLI bin mode normalization for Unix installs.
+- Added npm publish preflight documentation and trusted publishing notes.
+- Updated CI to run full package verification.
+
 ## 0.1.0 - 2026-06-01
 
 Initial MVP.
